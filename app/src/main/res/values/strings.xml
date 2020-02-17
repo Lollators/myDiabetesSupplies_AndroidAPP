@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">My Diabetes Supplies</string>
+    <string name="loginButton">Login</string>
+    <string name="vial">Vial</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="or">OR</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="repeat_password">Repeat Password</string>
+    <string name="go_back">Go Back</string>
+</resources>
