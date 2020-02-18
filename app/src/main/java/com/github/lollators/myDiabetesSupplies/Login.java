@@ -9,12 +9,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class Login extends AppCompatActivity {
-    public DatabaseHelper dbHelper = new DatabaseHelper(this);
+    DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dbHelper = DatabaseHelper.getInstance(getApplicationContext());
     }
 
     public void login(View loginScreen) {
@@ -22,6 +23,7 @@ public class Login extends AppCompatActivity {
         String username = ((EditText) findViewById(R.id.username)).getText().toString();
         String password = ((EditText) findViewById(R.id.password)).getText().toString();
         if(dbHelper.login(username, password)){
+            System.out.println("AUTH!!");
             Toast success =  Toast.makeText(this, "AUTHENTICATED!", Toast.LENGTH_LONG);
             success.show();
         } else {

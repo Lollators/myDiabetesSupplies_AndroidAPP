@@ -6,14 +6,23 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.os.Build;
 
 import org.mindrot.jbcrypt.BCrypt;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final String DB_NAME = "MyDiabetesSupplies";
+    private static final String DB_NAME = "MyDiabetesSupplies.db";
     private static final String USER_TABLE = "user";
     private static final String SUPPLIES_TABLE = "supplies";
     private static final String USER_PRODUCT_TABLE = "user_product";
+    private static DatabaseHelper databaseHelper;
+
+    public static DatabaseHelper getInstance(Context context) {
+        if (databaseHelper == null) {
+            databaseHelper = new DatabaseHelper(context);
+        }
+        return databaseHelper;
+    }
 
     //password hashing
     private String hashPassword(String plainTextPassword){
@@ -34,18 +43,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createUserTable = "CREATE TABLE " + USER_TABLE +
-                " (username TEXT PRIMARY KEY NOT NULL, password TEXT NOT NULL)";
+                " (username TEXT PRIMARY KEY, password TEXT NOT NULL)";
         String createProductTable = "CREATE TABLE " + SUPPLIES_TABLE +
-                " (serial_number TEXT PRIMARY KEY NOT NULL, name TEXT NOT NULL, " +
+                " (serial_number TEXT PRIMARY KEY, name TEXT NOT NULL, " +
                 "expiration_date TEXT NOT NULL, bin TEXT NOT NULL)";
         String createUserProduct = "CREATE TABLE " + USER_PRODUCT_TABLE +
-                " (id INTEGER AUTOINCREMENT PRIMARY KEY NOT NULL, username TEXT NOT NULL, " +
+                " (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, " +
                 "serial_number TEXT NOT NULL, FOREIGN KEY (username) REFERENCES " + USER_TABLE +
                 "(username), FOREIGN KEY (serial_number) REFERENCES " +
                 SUPPLIES_TABLE + "(serial_number))";
         db.execSQL(createUserTable);
         db.execSQL(createProductTable);
         db.execSQL(createUserProduct);
+
+        //add testing account
+        db.execSQL("INSERT INTO " + USER_TABLE + " (username, password) VALUES ('test','" + hashPassword("test") + "')");
     }
 
     @Override
@@ -56,30 +68,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        if (!db.isReadOnly()) {
+            // Enable foreign key constraints
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                db.execSQL("pragma foreign_keys = on;");
+            } else {
+                db.setForeignKeyConstraintsEnabled(true);
+            }
+        }
+    }
+
     //create new user
-    //TODO: check that the user does not already exist
     public boolean createUser(String username, String password){
         //check if user already exists
         SQLiteDatabase myDB = this.getWritableDatabase();
-        String columns[] = {"username"};
         String selection[] = {username};
         Cursor cursor = null;
         try {
-            cursor = myDB.query(USER_TABLE, columns, "username=?", selection,null, null,null,"1");
-
+            String sql = "SELECT * FROM " + USER_TABLE + " WHERE username=? LIMIT 1";
+            cursor = myDB.rawQuery(sql, selection);
+            System.err.println(cursor.getCount());
             //user does not exist
-            if(cursor!=null && cursor.getCount()==0) {
+            if(!(cursor.getCount()>0)) {
                 //then add user
                 SQLiteStatement stmt = myDB.compileStatement("INSERT INTO " + USER_TABLE + " (username, password) VALUES(?,?)");
                 stmt.bindString(1, username);
                 stmt.bindString(2, hashPassword(password));
                 stmt.execute();
                 cursor.close();
-                myDB.close();
                 return true;
             } else {
                 cursor.close();
-                myDB.close();
                 return false;
             }
         } catch (SQLException e){
@@ -87,53 +109,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (Exception e2) {
             e2.printStackTrace();
         } finally {
-            myDB.close();
             cursor.close();
             return false;
         }
     }
 
     //authenticate user
-    public boolean login(String username, String password){
+    public boolean login(String username, String password) {
         SQLiteDatabase myDB = this.getReadableDatabase();
-        String columns[] = {"username","password"};
         String selection[] = {username};
         Cursor cursor = null;
         try {
-            cursor = myDB.query(USER_TABLE, columns, "username=?", selection,null, null,null,"1");
+            String sql = "SELECT * FROM " + USER_TABLE + " WHERE username=? LIMIT 1";
+            cursor = myDB.rawQuery(sql, selection);
 
-            if(cursor!=null && cursor.getCount()>0) {
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                System.out.println("COLUMN INDEX FOR PASSWORD: " + cursor.getColumnIndex("password"));
+                System.out.println("COLUMN NAME: " + cursor.getString(1));
                 String hashedpassword = cursor.getString(cursor.getColumnIndex("password"));
 
                 //user authenticated
-                if(checkPassword(password, hashedpassword)) {
+                if (checkPassword(password, hashedpassword)) {
                     cursor.close();
-                    myDB.close();
                     return true;
-                    //wrong password
-                } else {
-                    cursor.close();
-                    myDB.close();
-                    return false;
                 }
 
-                //user does not exist
-            } else {
-                cursor.close();
-                myDB.close();
-                return false;
             }
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         } catch (Exception e2) {
             e2.printStackTrace();
-        } finally {
-            myDB.close();
-            cursor.close();
-            return false;
         }
+
+        cursor.close();
+        return false;
+
     }
-
-
-
 }
