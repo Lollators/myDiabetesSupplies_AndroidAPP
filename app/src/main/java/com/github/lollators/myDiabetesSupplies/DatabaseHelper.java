@@ -1,6 +1,5 @@
 package com.github.lollators.myDiabetesSupplies;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
