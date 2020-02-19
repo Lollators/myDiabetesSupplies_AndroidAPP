@@ -1,5 +1,6 @@
 package com.github.lollators.myDiabetesSupplies;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -69,6 +70,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + SUPPLIES_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + USER_PRODUCT_TABLE);
+        onCreate(db);
+    }
+
+    @Override
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
         if (!db.isReadOnly()) {
@@ -100,18 +109,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 stmt.execute();
                 cursor.close();
                 return true;
-            } else {
-                cursor.close();
-                return false;
             }
         } catch (SQLException e){
             e.printStackTrace();
         } catch (Exception e2) {
             e2.printStackTrace();
-        } finally {
-            cursor.close();
-            return false;
         }
+
+        cursor.close();
+        return false;
     }
 
     //authenticate user
@@ -123,27 +129,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String sql = "SELECT * FROM " + USER_TABLE + " WHERE username=? LIMIT 1";
             cursor = myDB.rawQuery(sql, selection);
 
+            //if user exist
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
-                System.out.println("COLUMN INDEX FOR PASSWORD: " + cursor.getColumnIndex("password"));
-                System.out.println("COLUMN NAME: " + cursor.getString(1));
+
+                //fetch its stored password
                 String hashedpassword = cursor.getString(cursor.getColumnIndex("password"));
 
-                //user authenticated
+                //compare stored password with the one in login screen
                 if (checkPassword(password, hashedpassword)) {
+
+                    //if they match user is authenticated
                     cursor.close();
                     return true;
                 }
-
             }
         } catch (SQLException e) {
+            e.toString();
             e.printStackTrace();
         } catch (Exception e2) {
+            e2.toString();
             e2.printStackTrace();
+
         }
 
+        //in any other case return false
         cursor.close();
         return false;
-
     }
 }

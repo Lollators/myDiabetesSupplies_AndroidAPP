@@ -19,16 +19,34 @@ public class Login extends AppCompatActivity {
     }
 
     public void login(View loginScreen) {
+        EditText usernameField = findViewById(R.id.username);
+        EditText passwordField = findViewById(R.id.password);
+
         //get username and password
-        String username = ((EditText) findViewById(R.id.username)).getText().toString();
-        String password = ((EditText) findViewById(R.id.password)).getText().toString();
-        if(dbHelper.login(username, password)){
-            System.out.println("AUTH!!");
-            Toast success =  Toast.makeText(this, "AUTHENTICATED!", Toast.LENGTH_LONG);
-            success.show();
+        String username = usernameField.getText().toString().trim();
+        String password = usernameField.getText().toString().trim();
+
+        if(username.trim().equalsIgnoreCase("")){
+            usernameField.setError("This field cannot be blank");
         } else {
-            Toast error =  Toast.makeText(this, "Wrong username or password", Toast.LENGTH_LONG);
-            error.show();
+            usernameField.setError(null);
+        }
+        if(password.trim().equalsIgnoreCase("")){
+            passwordField.setError("This field cannot be blank");
+        } else {
+            passwordField.setError(null);
+        }
+        if((usernameField.getError().equals(null) || usernameField.getText().length() != 0) &&
+                (passwordField.getError().equals(null)) || passwordField.getText().length() != 0){
+            if (dbHelper.login(username, password)) {
+                Toast success = Toast.makeText(this,
+                        "User Authenticated!", Toast.LENGTH_LONG);
+                success.show();
+            } else {
+                Toast error = Toast.makeText(this,
+                        "Wrong username or password", Toast.LENGTH_LONG);
+                error.show();
+            }
         }
     }
 

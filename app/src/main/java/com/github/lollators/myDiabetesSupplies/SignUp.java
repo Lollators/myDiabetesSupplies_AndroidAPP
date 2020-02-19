@@ -1,5 +1,6 @@
 package com.github.lollators.myDiabetesSupplies;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -26,10 +27,14 @@ public class SignUp extends AppCompatActivity {
 
         //if password matches its retype
         if(password.equals(password_retype)){
-            //check if user already exist
+            //check if user already exist - if not then create one
             if(dbHelper.createUser(username,password)){
-                Toast success =  Toast.makeText(this, "User created successfully!", Toast.LENGTH_LONG);
-                success.show();
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setCancelable(true);
+                alertDialogBuilder.setMessage("User created successfully!");
+                alertDialogBuilder.setTitle("Success!");
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
             }
 
         } else {
