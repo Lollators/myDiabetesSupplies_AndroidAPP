@@ -36,8 +36,8 @@ public class Login extends AppCompatActivity {
         } else {
             passwordField.setError(null);
         }
-        if((usernameField.getError() == null || usernameField.getText().length() != 0) &&
-                (passwordField.getError() == null || passwordField.getText().length() != 0)){
+        if((usernameField.getError() == null && usernameField.getText().length() != 0) &&
+                (passwordField.getError() == null && passwordField.getText().length() != 0)){
             if (dbHelper.login(username, password)) {
                 //TODO: go to next screen instead of displaying toast
                 Toast success = Toast.makeText(this,

@@ -48,7 +48,7 @@ public class SignUp extends AppCompatActivity {
         }
 
         //if all field are completed
-        if((usernameField.getError() == null || usernameField.getText().length() != 0) && (passwordField.getError() == null || passwordField.getText().length() != 0) && (passwordRetypeField.getError() == null || passwordRetypeField.getText().length() != 0)) {
+        if((usernameField.getError() == null && usernameField.getText().length() != 0) && (passwordField.getError() == null && passwordField.getText().length() != 0) && (passwordRetypeField.getError() == null && passwordRetypeField.getText().length() != 0)) {
 
             //if password matches its retype
             if (password.equals(password_retype)) {
@@ -60,12 +60,21 @@ public class SignUp extends AppCompatActivity {
                     alertDialogBuilder.setTitle("Success!");
                     AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
+                } else {
+                    usernameField.setError("User already exist!");
                 }
 
             } else {
-                Toast error = Toast.makeText(this, "Passwords do not match", Toast.LENGTH_LONG);
-                error.show();
+                passwordField.setError("Passwords don't match");
+                passwordRetypeField.setError("Passwords don't match");
             }
+        } else {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setCancelable(true);
+            alertDialogBuilder.setMessage("Error encountered during the creation of the user");
+            alertDialogBuilder.setTitle("Error!");
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
         }
 
 
