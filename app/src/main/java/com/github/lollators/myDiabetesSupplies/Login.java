@@ -39,10 +39,9 @@ public class Login extends AppCompatActivity {
         if((usernameField.getError() == null && usernameField.getText().length() != 0) &&
                 (passwordField.getError() == null && passwordField.getText().length() != 0)){
             if (dbHelper.login(username, password)) {
-                //TODO: go to next screen instead of displaying toast
-                Toast success = Toast.makeText(this,
-                        "User Authenticated!", Toast.LENGTH_LONG);
-                success.show();
+                Intent myIntent = new Intent(this, MainScreen.class);
+                startActivity(myIntent);
+                finish();
             } else {
                 Toast error = Toast.makeText(this,
                         "Wrong username or password", Toast.LENGTH_LONG);
