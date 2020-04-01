@@ -7,6 +7,14 @@
     <string name="or">OR</string>
     <string name="sign_up">Sign Up</string>
     <string name="repeat_password">Repeat Password</string>
-    <string name="go_back">Go Back</string>
+    <string name="product_serial_number">Product Serial Number:</string>
+    <string-array name="productCategories">
+        <item>Lancets</item>
+        <item>Test Strips</item>
+        <item>Insulin</item>
+        <item>Sites</item>
+        <item>Tanks</item>
+        <item>Sensors</item>
+    </string-array>
 
 </resources>

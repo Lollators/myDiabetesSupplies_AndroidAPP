@@ -10,6 +10,9 @@ import android.os.Build;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "MyDiabetesSupplies.db";
     private static final String USER_TABLE = "user";
@@ -156,4 +159,72 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return false;
     }
+
+    public boolean addProduct(String serialNumber, String name, String expirationDate, String bin){
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        String selection[] = {serialNumber};
+        Cursor cursor = null;
+        try {
+            String sql = "SELECT * FROM " + SUPPLIES_TABLE + " WHERE serial_number=? LIMIT 1";
+            cursor = myDB.rawQuery(sql, selection);
+
+            //if product exist
+            if (cursor.getCount() > 0) {
+                cursor.close();
+                return false;
+            } else {
+                String product[] = {serialNumber,name,expirationDate,bin};
+                sql = "INSERT INTO " + SUPPLIES_TABLE + "(serial_number, name, expiration_date, bin)" +
+                        " VALUES (?,?,?,?);";
+                myDB.execSQL(sql, product);
+                cursor.close();
+                return true;
+            }
+        } catch (SQLException e) {
+            e.toString();
+            e.printStackTrace();
+        } catch (Exception e2) {
+            e2.toString();
+            e2.printStackTrace();
+
+        }
+
+        //in any other case return false
+        cursor.close();
+        return false;
+
+
+    }
+
+    ArrayList getProduct(String productType) {
+        ArrayList<Product> myProducts = new ArrayList<Product>();
+
+        SQLiteDatabase myDB = this.getReadableDatabase();
+        Cursor cursor = null;
+        String selection[] = {productType};
+        try {
+            String sql = "SELECT * FROM " + SUPPLIES_TABLE + " WHERE name=?";
+            cursor = myDB.rawQuery(sql, selection);
+
+            //if any products of certain category exist
+            while (cursor.moveToNext()) {
+                String serialNumber = cursor.getString(cursor.getColumnIndex("serial_number"));
+                String name = cursor.getString(cursor.getColumnIndex("name"));
+                String expiration_date = cursor.getString(cursor.getColumnIndex("expiration_date"));
+                String bin = cursor.getString(cursor.getColumnIndex("bin"));
+
+                myProducts.add(new Product(serialNumber, name, expiration_date, bin));
+            }
+
+        } catch (SQLException e) {
+            e.toString();
+            e.printStackTrace();
+        } catch (Exception e2) {
+            e2.toString();
+            e2.printStackTrace();
+        }
+
+        return myProducts;
+    }
+
 }

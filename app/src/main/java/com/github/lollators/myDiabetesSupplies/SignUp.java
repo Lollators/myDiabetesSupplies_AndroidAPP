@@ -16,10 +16,6 @@ public class SignUp extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
     }
 
-    public void back(View signupScreen){
-        finish();
-    }
-
     public void signUp(View signupScreen){
         EditText usernameField = findViewById(R.id.username_SignUp);
         EditText passwordField = findViewById(R.id.signup_password);
