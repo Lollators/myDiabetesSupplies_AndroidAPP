@@ -9,14 +9,14 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-public class ProductManagement extends AppCompatActivity {
+public class AddProduct extends AppCompatActivity {
     DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_product_management);
-        Spinner spinner = (Spinner) findViewById(R.id.productTypes);
+        setContentView(R.layout.activity_add_product);
+        Spinner spinner = findViewById(R.id.productTypes);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.productCategories ,android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -57,19 +57,17 @@ public class ProductManagement extends AppCompatActivity {
                 && (binText.getError() == null && binText.getText().length() != 0)){
             if (dbHelper.addProduct(serialNumber,productType,expirationDate,bin)) {
                 Toast success = Toast.makeText(this,
-                        "Product Added to the database", Toast.LENGTH_LONG);
+                        "Product added to the database", Toast.LENGTH_LONG);
                 success.show();
             } else {
                 Toast error = Toast.makeText(this,
-                        "Could not add product to database, check if already exists", Toast.LENGTH_LONG);
+                        "Could not add product to database, it may already exists", Toast.LENGTH_LONG);
                 error.show();
             }
         }
     }
 
-    public void removeProduct(View view){
 
-    }
 
 
 

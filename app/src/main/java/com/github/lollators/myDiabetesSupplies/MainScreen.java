@@ -21,7 +21,7 @@ public class MainScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
 
-        Spinner spinner = (Spinner) findViewById(R.id.productType);
+        Spinner spinner = findViewById(R.id.productType);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.productCategories ,android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -81,7 +81,12 @@ public class MainScreen extends AppCompatActivity {
     }
 
     public void add(android.view.View view){
-        Intent myIntent = new Intent(this, ProductManagement.class);
+        Intent myIntent = new Intent(this, AddProduct.class);
+        startActivity(myIntent);
+    }
+
+    public void remove(android.view.View view){
+        Intent myIntent = new Intent(this, RemoveProduct.class);
         startActivity(myIntent);
     }
 

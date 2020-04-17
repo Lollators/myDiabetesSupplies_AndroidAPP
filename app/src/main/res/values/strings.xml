@@ -8,6 +8,17 @@
     <string name="sign_up">Sign Up</string>
     <string name="repeat_password">Repeat Password</string>
     <string name="product_serial_number">Product Serial Number:</string>
+    <string name="add_product">Add Product</string>
+    <string name="product_type">Product Type:</string>
+    <string name="bin">Bin #:</string>
+    <string name="remove">Remove</string>
+    <string name="remove_product">Remove Product</string>
+    <string name="name">Name</string>
+    <string name="category">Category</string>
+    <string name="expiration">Expiration</string>
+    <string name="box">Box</string>
+    <string name="add">+</string>
+    <string name="removeProduct">-</string>
     <string-array name="productCategories">
         <item>Lancets</item>
         <item>Test Strips</item>

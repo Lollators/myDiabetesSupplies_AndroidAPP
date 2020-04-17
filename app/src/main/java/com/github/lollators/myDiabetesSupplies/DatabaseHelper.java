@@ -33,10 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private boolean checkPassword(String plainPassword, String hashedPassword) {
-        if (BCrypt.checkpw(plainPassword, hashedPassword))
-            return true;
-        else
-            return false;
+        return BCrypt.checkpw(plainPassword, hashedPassword);
     }
 
     public DatabaseHelper(Context context){
@@ -84,11 +81,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super.onOpen(db);
         if (!db.isReadOnly()) {
             // Enable foreign key constraints
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                db.execSQL("pragma foreign_keys = on;");
-            } else {
-                db.setForeignKeyConstraintsEnabled(true);
-            }
+            db.setForeignKeyConstraintsEnabled(true);
         }
     }
 
@@ -96,16 +89,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean createUser(String username, String password){
         //check if user already exists
         SQLiteDatabase myDB = this.getWritableDatabase();
-        String selection[] = {username};
+        String[] selection = {username};
         Cursor cursor = null;
         try {
-            String sql = "SELECT * FROM " + USER_TABLE + " WHERE username=? LIMIT 1";
+            String sql = "SELECT * FROM " + USER_TABLE + " WHERE username=? LIMIT 1;";
             cursor = myDB.rawQuery(sql, selection);
             System.err.println(cursor.getCount());
             //user does not exist
             if(!(cursor.getCount()>0)) {
                 //then add user
-                SQLiteStatement stmt = myDB.compileStatement("INSERT INTO " + USER_TABLE + " (username, password) VALUES(?,?)");
+                SQLiteStatement stmt = myDB.compileStatement("INSERT INTO " + USER_TABLE + " (username, password) VALUES(?,?);");
                 stmt.bindString(1, username);
                 stmt.bindString(2, hashPassword(password));
                 stmt.execute();
@@ -113,8 +106,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 return true;
             }
         } catch (SQLException e){
+            System.out.println(e.toString());
             e.printStackTrace();
         } catch (Exception e2) {
+            System.out.println(e2.toString());
             e2.printStackTrace();
         }
 
@@ -125,10 +120,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //authenticate user
     public boolean login(String username, String password) {
         SQLiteDatabase myDB = this.getReadableDatabase();
-        String selection[] = {username};
+        String[] selection = {username};
         Cursor cursor = null;
         try {
-            String sql = "SELECT * FROM " + USER_TABLE + " WHERE username=? LIMIT 1";
+            String sql = "SELECT * FROM " + USER_TABLE + " WHERE username=? LIMIT 1;";
             cursor = myDB.rawQuery(sql, selection);
 
             //if user exist
@@ -147,12 +142,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 }
             }
         } catch (SQLException e) {
-            e.toString();
+            System.out.println(e.toString());
             e.printStackTrace();
         } catch (Exception e2) {
-            e2.toString();
+            System.out.println(e2.toString());
             e2.printStackTrace();
-
         }
 
         //in any other case return false
@@ -162,10 +156,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean addProduct(String serialNumber, String name, String expirationDate, String bin){
         SQLiteDatabase myDB = this.getWritableDatabase();
-        String selection[] = {serialNumber};
+        String[] selection = {serialNumber};
         Cursor cursor = null;
         try {
-            String sql = "SELECT * FROM " + SUPPLIES_TABLE + " WHERE serial_number=? LIMIT 1";
+            String sql = "SELECT * FROM " + SUPPLIES_TABLE + " WHERE serial_number=? LIMIT 1;";
             cursor = myDB.rawQuery(sql, selection);
 
             //if product exist
@@ -173,7 +167,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cursor.close();
                 return false;
             } else {
-                String product[] = {serialNumber,name,expirationDate,bin};
+                String[] product = {serialNumber,name,expirationDate,bin};
                 sql = "INSERT INTO " + SUPPLIES_TABLE + "(serial_number, name, expiration_date, bin)" +
                         " VALUES (?,?,?,?);";
                 myDB.execSQL(sql, product);
@@ -181,10 +175,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 return true;
             }
         } catch (SQLException e) {
-            e.toString();
+            System.out.println(e.toString());
             e.printStackTrace();
         } catch (Exception e2) {
-            e2.toString();
+            System.out.println(e2.toString());
             e2.printStackTrace();
 
         }
@@ -192,8 +186,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //in any other case return false
         cursor.close();
         return false;
+    }
 
+    public boolean removeProduct(String serialNumber){
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        String[] selection = {serialNumber};
+        Cursor cursor = null;
+        try {
+            String sql = "SELECT * FROM " + SUPPLIES_TABLE + " WHERE serial_number=? LIMIT 1;";
+            cursor = myDB.rawQuery(sql, selection);
 
+            //if product exist - remove it
+            if (cursor.getCount() > 0) {
+                sql = "DELETE FROM " + SUPPLIES_TABLE + " WHERE serial_number=?;";
+                myDB.execSQL(sql, selection);
+                cursor.close();
+                return true;
+            } else {
+                cursor.close();
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+            e.printStackTrace();
+        } catch (Exception e2) {
+            System.out.println(e2.toString());
+            e2.printStackTrace();
+
+        }
+
+        //in any other case return false
+        cursor.close();
+        return false;
     }
 
     ArrayList getProduct(String productType) {
@@ -201,9 +225,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase myDB = this.getReadableDatabase();
         Cursor cursor = null;
-        String selection[] = {productType};
+        String[] selection = {productType};
         try {
-            String sql = "SELECT * FROM " + SUPPLIES_TABLE + " WHERE name=?";
+            String sql = "SELECT * FROM " + SUPPLIES_TABLE + " WHERE name=?;";
             cursor = myDB.rawQuery(sql, selection);
 
             //if any products of certain category exist
@@ -217,10 +241,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
 
         } catch (SQLException e) {
-            e.toString();
+            System.out.println(e.toString());
             e.printStackTrace();
         } catch (Exception e2) {
-            e2.toString();
+            System.out.println(e2.toString());
             e2.printStackTrace();
         }
 
