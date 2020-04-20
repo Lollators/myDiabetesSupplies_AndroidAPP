@@ -6,12 +6,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
-import android.os.Build;
-
 import org.mindrot.jbcrypt.BCrypt;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "MyDiabetesSupplies.db";
@@ -227,7 +223,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = null;
         String[] selection = {productType};
         try {
-            String sql = "SELECT * FROM " + SUPPLIES_TABLE + " WHERE name=?;";
+            String sql = "SELECT * FROM " + SUPPLIES_TABLE + " WHERE name=? ORDER BY expiration_date DESC;";
             cursor = myDB.rawQuery(sql, selection);
 
             //if any products of certain category exist
