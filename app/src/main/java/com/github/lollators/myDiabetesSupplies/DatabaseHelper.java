@@ -53,7 +53,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createUserProduct);
 
         //add testing account
-        db.execSQL("INSERT INTO " + USER_TABLE + " (username, password) VALUES ('test','" + hashPassword("test") + "')");
+        db.execSQL("INSERT INTO " + USER_TABLE + " (username, password) VALUES ('admin','" + hashPassword("admin") + "')");
     }
 
     @Override

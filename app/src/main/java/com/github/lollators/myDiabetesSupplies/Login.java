@@ -15,10 +15,10 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        dbHelper = DatabaseHelper.getInstance(getApplicationContext());
     }
 
     public void login(View loginScreen) {
+        dbHelper = DatabaseHelper.getInstance(getApplicationContext());
         EditText usernameField = findViewById(R.id.username);
         EditText passwordField = findViewById(R.id.password);
 
